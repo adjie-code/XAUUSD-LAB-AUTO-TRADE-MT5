@@ -219,7 +219,12 @@ def _update_symbol_config(symbol: str) -> None:
     if symbol and symbol not in cands:
         cands.insert(0, symbol)
     at["symbol_candidates"] = cands[:12]
-    _atomic_write(CONFIG_PATH, (json.dumps(cfg, indent=2) + "\n").encode("utf-8"), 0o660)
+    # config.json di-bind-mount sebagai file; tulis in-place agar tidak gagal rename.
+    try:
+        CONFIG_PATH.write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8")
+        os.chmod(CONFIG_PATH, 0o660)
+    except OSError:
+        pass
 
 
 def login(payload: dict) -> dict:
