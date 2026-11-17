@@ -131,6 +131,18 @@ commit database ke GitHub.
 - `common.ini` berisi kredensial MT5 di volume server; batasi akses host.
 - Gunakan akun **DEMO** sampai strategi tervalidasi.
 
+## Upload ke GitHub
+
+Repo lokal sudah diinisialisasi di folder ini. Tambahkan remote dan push:
+
+```bash
+git remote add origin https://github.com/USERNAME/REPO.git
+git branch -M main
+git push -u origin main
+```
+
+Jangan pernah commit `.env`, `secrets/`, `mt5-data/`, atau `data/*.db`.
+
 ## Perintah operasional
 
 ```bash
