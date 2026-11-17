@@ -1,0 +1,26 @@
+# Data dan kredensial runtime
+.env
+secrets/
+data/*.db
+data/.session_secret
+mt5-data/
+linux-mt5-data/
+linux-mt5-native-data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Backtest artefacts
+backtest/results/
+backtest/data/
+backtest/*.log
+
+# Logs / editor
+*.log
+.vscode/
+.idea/
+
+# OS
+.DS_Store

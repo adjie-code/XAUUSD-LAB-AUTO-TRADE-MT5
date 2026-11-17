@@ -1,0 +1,44 @@
+{
+  "pair": "XAUUSD",
+  "timeframe": "M5",
+  "prioritize_session": "Asia",
+  "similarity_threshold_pct": 90,
+  "top_patterns": 10,
+  "update_every_n_candles": 1,
+  "candles_per_pattern": 10,
+  "port": 8090,
+  "mode": "research_only",
+  "phase": 8,
+  "time_display": "MT5",
+  "predict_mode": "topk_median",
+  "predict_top_k": 40,
+  "auto_trade": {
+    "enabled": true,
+    "symbol": "XAUUSD",
+    "lot": 0.01,
+    "lot_strong": 0.05,
+    "prob_min": 75,
+    "max_positions": 20,
+    "max_orders_per_candle": 5,
+    "rr_min": 1.0,
+    "trend_filter": true,
+    "trend_period": 13,
+    "rr_min_trend": 1.0,
+    "symbol_candidates": [
+      "XAUUSD",
+      "XAUUSDc",
+      "XAUUSDb",
+      "XAUUSDm",
+      "XAUUSD.",
+      "GOLD",
+      "GOLD#"
+    ],
+    "auto_symbol": true
+  },
+  "auth": {
+    "enabled": true,
+    "username": "admin",
+    "password_hash": "",
+    "session_hours": 12
+  }
+}

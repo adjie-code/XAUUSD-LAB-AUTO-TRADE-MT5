@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05080d">
+<title>Login Broker MT5 — XAUUSD Pattern</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="broker-login.css">
+</head>
+<body>
+<div class="ambient ambient-gold" aria-hidden="true"></div>
+<div class="ambient ambient-teal" aria-hidden="true"></div>
+<main class="broker-shell">
+  <section class="broker-card">
+    <div class="broker-brand">
+      <span class="logo-mark">MT5</span>
+      <div>
+        <span class="eyebrow">Koneksi broker</span>
+        <h1>Login akun MT5</h1>
+      </div>
+    </div>
+    <p class="broker-lead">
+      Masukkan akun MT5 dari broker Anda. Dashboard akan menulis konfigurasi
+      login ke terminal MT5, memilih simbol XAUUSD yang tersedia di broker,
+      lalu me-restart MT5 agar EA langsung siap.
+    </p>
+
+    <div class="broker-warning">
+      Kredensial dikirim ke server ini dan ditulis ke volume MT5. Jangan
+      commit folder <code>mt5-data</code>, <code>secrets</code>, atau file
+      <code>.env</code> ke GitHub.
+    </div>
+
+    <div id="broker-current" class="broker-current" hidden>
+      <span class="status-dot"></span>
+      <span id="broker-current-text">—</span>
+      <button type="button" id="broker-logout" class="link-btn">Putuskan sesi</button>
+    </div>
+
+    <form id="broker-form" class="broker-form" autocomplete="off">
+      <label>
+        <span>Nama broker</span>
+        <input id="f-broker" name="broker" type="text" required maxlength="64"
+               placeholder="Contoh: HFM / Exness / IC Markets">
+      </label>
+      <label>
+        <span>Server MT5</span>
+        <input id="f-server" name="server" type="text" required maxlength="96"
+               placeholder="Contoh: HFMarketsSA-Live / Exness-MT5Real8"
+               list="server-presets">
+        <datalist id="server-presets">
+          <option value="HFMarketsSA-Live"></option>
+          <option value="HFMarketsSA-Demo"></option>
+          <option value="Exness-MT5Real8"></option>
+          <option value="Exness-MT5Trial8"></option>
+          <option value="ICMarketsSC-Live"></option>
+          <option value="ICMarketsSC-Demo"></option>
+        </datalist>
+      </label>
+      <label>
+        <span>Username / nomor akun</span>
+        <input id="f-username" name="username" type="text" required maxlength="64"
+               inputmode="numeric" autocomplete="username" placeholder="Nomor akun MT5">
+      </label>
+      <label>
+        <span>Password MT5</span>
+        <input id="f-password" name="password" type="password" required maxlength="256"
+               autocomplete="current-password" placeholder="Password akun MT5">
+      </label>
+      <label>
+        <span>Simbol XAUUSD broker <em>(opsional)</em></span>
+        <input id="f-symbol" name="symbol" type="text" maxlength="32"
+               placeholder="XAUUSD / XAUUSDc / XAUUSDb / GOLD"
+               list="symbol-presets">
+        <datalist id="symbol-presets">
+          <option value="XAUUSD"></option><option value="XAUUSDc"></option>
+          <option value="XAUUSDb"></option><option value="XAUUSDm"></option>
+          <option value="XAUUSD."></option><option value="GOLD"></option>
+        </datalist>
+        <small>Jika kosong, EA akan mencari simbol yang mengandung XAUUSD/GOLD.</small>
+      </label>
+      <button id="broker-submit" type="submit" class="primary-btn">Hubungkan &amp; restart MT5</button>
+    </form>
+
+    <div id="broker-message" class="broker-message" role="status" aria-live="polite"></div>
+
+    <div class="broker-footer">
+      <a href="/">Buka dashboard</a>
+      <span>·</span>
+      <span>MT5 harus DEMO untuk eksekusi</span>
+    </div>
+  </section>
+</main>
+<script src="broker-login.js"></script>
+</body>
+</html>

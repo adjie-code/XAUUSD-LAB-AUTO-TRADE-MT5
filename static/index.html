@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05080d">
+<title>XAUUSD Pattern Lab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="ambient ambient-gold" aria-hidden="true"></div>
+<div class="ambient ambient-teal" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/" aria-label="XAUUSD Pattern Lab">
+      <span class="logo-mark">XAU</span>
+      <span class="brand-copy">
+        <span class="brand-title">XAUUSD <b>Pattern Lab</b></span>
+        <span class="brand-sub">
+          <span id="pair-tf">XAUUSD · M5</span>
+          <span class="sep">/</span>
+          <span id="data-source">memuat sumber data…</span>
+        </span>
+      </span>
+    </a>
+
+    <div class="topbar-meta">
+      <span class="status-pill" id="conn-pill">
+        <span class="status-dot" id="conn-dot"></span>
+        <span id="conn-text">menghubungkan…</span>
+      </span>
+      <span class="badge" id="phase-badge">Fase 8</span>
+      <span class="badge mode" id="mode-badge">memuat status eksekusi…</span>
+      <a class="nav-chip" href="/strategy-monitor" title="Monitor per strategi">Monitor</a>
+      <a class="nav-chip" href="/strategy-lab" title="Ruang kerja strategi baru">Strategy Lab</a>
+      <button id="auth-btn" class="auth-chip" type="button" aria-label="Masuk admin">
+        <span id="auth-icon" aria-hidden="true">🔒</span>
+        <span id="auth-label">Masuk</span>
+      </button>
+      <span class="refresh-chip">
+        <span>refresh</span>
+        <strong id="countdown">--:--</strong>
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" aria-label="Ringkasan pasar">
+    <article class="hero-card price-card">
+      <div class="card-top">
+        <span class="eyebrow"><span class="live-dot"></span> Harga terakhir · XAUUSD</span>
+        <span class="time-chip" id="hero-time">-</span>
+      </div>
+      <div class="price-row">
+        <div class="price" id="hero-price">--</div>
+        <div class="change neutral" id="hero-change">--</div>
+      </div>
+      <canvas id="sparkline" height="64" aria-label="Sparkline harga XAUUSD"></canvas>
+      <div class="price-meta">
+        <span>O <b id="hero-open">-</b></span>
+        <span>H <b id="hero-high">-</b></span>
+        <span>L <b id="hero-low">-</b></span>
+        <span>C <b id="hero-close">-</b></span>
+      </div>
+    </article>
+
+    <article class="hero-card trend-card" id="trend-card">
+      <div class="card-top">
+        <span class="eyebrow">Tren EMA<span id="trend-period">13</span></span>
+        <span class="trend-badge side" id="trend-badge">SIDEWAYS</span>
+      </div>
+      <div class="trend-main">
+        <div class="trend-arrow side" id="trend-arrow">→</div>
+        <div>
+          <div class="trend-label" id="trend-label">SIDEWAYS</div>
+          <div class="muted">EMA <span id="trend-ema">-</span> · close <span id="trend-close">-</span></div>
+        </div>
+      </div>
+      <div class="trend-gauge">
+        <div class="gauge-track"><span class="gauge-thumb" id="trend-thumb"></span></div>
+        <div class="gauge-legend"><span>TURUN</span><span>SIDE</span><span>NAIK</span></div>
+      </div>
+    </article>
+
+    <article class="hero-card accuracy-card">
+      <div class="card-top">
+        <span class="eyebrow">Akurasi arah</span>
+        <span class="badge-soft" id="accuracy-count">-</span>
+      </div>
+      <div class="accuracy-main">
+        <div class="ring" id="accuracy-ring" style="--p:0">
+          <div class="ring-inner">
+            <span id="accuracy-hit">-</span>
+            <small>arah benar</small>
+          </div>
+        </div>
+        <div class="accuracy-info">
+          <div class="accuracy-error"><span id="accuracy">-</span><small>rata-rata error</small></div>
+          <div class="muted" id="accuracy-sub">menunggu evaluasi…</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="hero-card exec-card">
+      <div class="card-top">
+        <span class="eyebrow">Eksekutor DEMO</span>
+        <span class="badge-soft" id="exec-badge">status…</span>
+      </div>
+      <div class="exec-main">
+        <div class="exec-state" id="exec-state">-</div>
+        <div class="exec-lots">
+          <span>lot normal <b id="exec-lot">-</b></span>
+          <span>lot kuat <b id="exec-lot-strong">-</b></span>
+        </div>
+      </div>
+      <div class="exec-meta">
+        <span>maks posisi <b id="exec-max">-</b></span>
+        <span>prob kuat <b id="exec-prob-min">-</b></span>
+        <span>R:R <b id="exec-rr">-</b></span>
+      </div>
+      <div class="exec-reason" id="exec-hero-reason">memuat aturan eksekutor…</div>
+    </article>
+  </section>
+
+  <!-- ================= RINGKASAN POLA ================= -->
+  <section class="pattern-strip panel" aria-label="Ringkasan pola">
+    <div class="strip-item">
+      <span class="strip-label">Kemiripan terbaik</span>
+      <b class="strip-value gold" id="similarity">--</b>
+      <small>ambang <span id="threshold-view">-</span>% · top <span id="topn-view">-</span> pola</small>
+    </div>
+    <div class="strip-sep" aria-hidden="true"></div>
+    <div class="strip-item">
+      <span class="strip-label">Arah candle #1</span>
+      <b class="strip-value" id="direction">-</b>
+      <small>cocok pada <span id="matched-at">-</span></small>
+    </div>
+    <div class="strip-sep" aria-hidden="true"></div>
+    <div class="strip-item">
+      <span class="strip-label">Update terakhir</span>
+      <b class="strip-value" id="last-update">-</b>
+      <small><span class="engine-dot" id="engine-badge">engine memuat…</span></small>
+    </div>
+  </section>
+
+  <!-- ================= PARAMETER ================= -->
+  <details class="panel param-panel">
+    <summary>
+      <span class="summary-left">
+        <span class="summary-icon" aria-hidden="true">⚙</span>
+        <span>
+          <b>Parameter riset</b>
+          <small>Ambang kemiripan, top-N, panjang pola, dan mode prediksi</small>
+        </span>
+      </span>
+      <span class="summary-right">
+        <span class="badge-soft" id="param-summary">memuat…</span>
+        <span class="chev" aria-hidden="true">⌄</span>
+      </span>
+    </summary>
+    <div id="param-lock" class="param-lock">
+      <span class="param-lock-icon" aria-hidden="true">🔒</span>
+      <div class="param-lock-copy">
+        <b>Parameter terkunci</b>
+        <p>Masuk sebagai admin untuk melihat dan mengubah parameter riset.</p>
+      </div>
+      <button id="param-login-btn" class="btn-primary" type="button">Masuk admin</button>
+    </div>
+    <div id="param-content" hidden>
+    <div class="params-grid">
+      <label>Waktu tampilan
+        <select id="time-display">
+          <option value="MT5">MT5 server (sama dgn chart)</option>
+          <option value="WIB">WIB (GMT+7)</option>
+          <option value="UTC">UTC</option>
+        </select>
+      </label>
+      <label>Sesi prioritas
+        <select id="session">
+          <option value="Asia">Asia</option>
+          <option value="Asia,Eropa">Asia + Eropa</option>
+          <option value="Eropa">Eropa</option>
+          <option value="Eropa,AS">Eropa + AS</option>
+          <option value="Semua">Semua</option>
+        </select>
+      </label>
+      <label>Batas kemiripan (%)
+        <input id="threshold" type="number" min="50" max="99" step="1">
+      </label>
+      <label>Jumlah pola terbaik
+        <input id="top-n" type="number" min="1" max="100" step="1">
+      </label>
+      <label>Panjang pola &amp; prediksi (5–60)
+        <input id="candles-n" type="number" min="5" max="60" step="1">
+      </label>
+      <label>Mode prediksi
+        <select id="predict-mode">
+          <option value="topk_median">Top-K median + band (baru)</option>
+          <option value="mean">Rata-rata pola (lama)</option>
+        </select>
+      </label>
+      <label>K pola serupa (3–50)
+        <input id="predict-k" type="number" min="3" max="50" step="1">
+      </label>
+      <div class="param-actions">
+        <button id="save-btn" class="btn-primary" type="button">Simpan parameter</button>
+        <span id="save-status" class="save-status"></span>
+      </div>
+    </div>
+    </div>
+  </details>
+
+  <!-- ================= CHART UTAMA ================= -->
+  <section class="panel chart-panel">
+    <div class="panel-head chart-head">
+      <div>
+        <span class="eyebrow">Live market</span>
+        <h2>XAUUSD <span class="muted">· <span id="live-count-view">120</span> candle terakhir</span></h2>
+      </div>
+      <div class="chart-toolbar">
+        <div class="tool-group">
+          <span class="tool-label">Candle</span>
+          <button class="tb-btn" type="button" data-bars="30">30</button>
+          <button class="tb-btn" type="button" data-bars="60">60</button>
+          <button class="tb-btn" type="button" data-bars="120">120</button>
+          <button class="tb-btn" type="button" data-bars="300">300</button>
+          <button class="tb-btn" type="button" data-bars="600">600</button>
+          <input id="bars-input" type="number" min="10" max="600" step="10" value="120" aria-label="Jumlah candle">
+          <button id="bars-apply" class="tb-btn" type="button">OK</button>
+        </div>
+        <div class="tool-group">
+          <button id="chart-auto" class="tb-btn live" type="button">⟳ Auto: ON</button>
+          <button id="go-live" class="tb-btn live" type="button">⏵ Live</button>
+        </div>
+        <span id="chart-status" class="hint"></span>
+      </div>
+    </div>
+    <div class="chart-frame">
+      <canvas id="chart-interactive" height="400"></canvas>
+    </div>
+    <div class="chart-foot">
+      <div class="legend">
+        <span><i class="dot up"></i> naik</span>
+        <span><i class="dot down"></i> turun</span>
+      </div>
+      <span class="hint">scroll = zoom · drag = geser · crosshair = OHLC + volume</span>
+    </div>
+  </section>
+
+  <!-- ================= REPLAY + PROYEKSI ================= -->
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">Pattern replay</span>
+          <h2>Pola historis vs reaksi</h2>
+        </div>
+        <span class="badge-soft">split</span>
+      </div>
+      <canvas id="chart-comparison" height="230"></canvas>
+      <div class="legend legend-wrap">
+        <span><i class="dot up"></i> candle historis tercocok (pola acuan)</span>
+        <span><i class="dot down"></i> candle aktual setelah pola (dasar penilaian)</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">Forecast</span>
+          <h2><span id="len-view-pred">10</span> candle proyeksi</h2>
+        </div>
+        <span class="badge-soft" id="pred-mode-view">-</span>
+      </div>
+      <canvas id="chart-predicted" height="230"></canvas>
+      <div class="legend legend-wrap">
+        <span><i class="dot gold"></i> candle median (perkiraan utama)</span>
+        <span><i class="dot band"></i> band 80% (p10–p90) sampel historis</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= TABEL PREDIKSI ================= -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Forecast detail</span>
+        <h2>Tabel prediksi</h2>
+      </div>
+      <span class="badge-soft">median · band 80% · probabilitas</span>
+    </div>
+    <div class="table-wrap">
+      <table id="pred-table">
+        <thead>
+          <tr><th scope="col">Candle ke-</th><th scope="col">Waktu</th><th scope="col">Open</th><th scope="col">High</th><th scope="col">Low</th><th scope="col">Close</th><th scope="col">Band 80% (p10–p90)</th><th scope="col">Probabilitas arah</th><th scope="col">Sampel</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= SARAN RISET ================= -->
+  <section class="panel signal-panel">
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Research signal</span>
+        <h2>Saran riset <span id="sug-trend" class="trend-inline">-</span></h2>
+      </div>
+      <span class="badge-soft">EMA13 · R:R</span>
+    </div>
+    <div id="active-signals" class="signal-chips">
+      <span class="muted">memuat sinyal aktif…</span>
+    </div>
+    <div class="table-wrap">
+      <table id="sug-table">
+        <thead>
+          <tr><th scope="col">Arah</th><th scope="col">Waktu candle</th><th scope="col">Waktu entry</th><th scope="col">Entry</th><th scope="col">SL</th><th scope="col">TP (median)</th><th scope="col">R:R</th><th scope="col">Prob arah</th><th scope="col">Sampel</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">Entry = close candle aktual terakhir (anchor) · SL = band 80% candle yang sama (p10 untuk BUY / p90 untuk SELL) · TP = median close pada jam tersebut. Aturan tampil sama dengan eksekutor: sinyal lawan tren disembunyikan (EMA13), sinyal searah tren cukup R:R ≥ 0.3, sideways wajib R:R ≥ 1:1, netral 45–55% selalu disembunyikan. Saat eksekusi, PATTERN juga menolak BUY bila candle M5 live sudah di bawah EMA13 dan menolak SELL bila candle live sudah di atas EMA13; PULLBACK tidak memakai guard ini. Hanya mode <code>topk_median</code> yang menghasilkan saran.</p>
+  </section>
+
+  <!-- ================= EKSEKUTOR ================= -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Execution tape</span>
+        <h2>Log eksekutor MT5</h2>
+      </div>
+      <span class="badge-soft">DEMO only</span>
+    </div>
+    <p class="note" id="exec-note">memuat status eksekutor…</p>
+    <div class="table-wrap exec-log-wrap">
+      <table id="exec-table">
+        <thead>
+          <tr><th scope="col">Waktu</th><th scope="col">ID sinyal</th><th scope="col">Arah</th><th scope="col">Retcode</th><th scope="col">Ticket</th><th scope="col">Hasil</th><th scope="col">Catatan</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">Log dari EA <code>XAUUSDPatternExecutor</code> (gabungan <b>PATTERN</b> + <b>PULLBACK TREN</b>). Identitas posisi memakai magic: PATTERN <code>20261111</code>, PULLBACK <code>20261113</code>. Kedua strategi punya aturan entry/exit sendiri: PATTERN mengikuti <code>signal.txt</code> dan <code>auto_trade.enabled</code>, PULLBACK mengikuti tren H1 + pullback M5 dan input <code>InpPullbackEnabled</code>. EA menolak akun real.</p>
+  </section>
+
+  <!-- ================= CAKUPAN DATA ================= -->
+  <section class="panel coverage-panel">
+    <div class="panel-head">
+      <div>
+        <span class="eyebrow">Data health</span>
+        <h2>Cakupan data historis</h2>
+      </div>
+      <span class="badge-soft" id="coverage-badge">-</span>
+    </div>
+    <div class="coverage-big" id="coverage-big">-</div>
+    <div class="muted" id="coverage-sub">menghitung…</div>
+    <div class="progress" aria-hidden="true"><span id="coverage-bar"></span></div>
+    <div class="coverage-foot"><span>0</span><span id="coverage-pct">-</span><span>target 20 tahun</span></div>
+  </section>
+
+  <!-- ================= TABEL BAWAH ================= -->
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">Closest matches</span>
+          <h2>Pola terbaik saat ini</h2>
+        </div>
+        <span class="badge-soft">top-N</span>
+      </div>
+      <div class="table-wrap">
+        <table id="top-match-table">
+          <thead>
+            <tr><th scope="col">#</th><th scope="col">Sesi</th><th scope="col">Waktu pola</th><th scope="col">Kemiripan</th><th scope="col">Sampel estimasi</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow">Run history</span>
+          <h2>Riwayat prediksi</h2>
+        </div>
+        <span class="badge-soft" id="history-count">10 terakhir</span>
+      </div>
+      <div class="table-wrap">
+        <table id="history-table">
+          <thead>
+            <tr><th scope="col">Run</th><th scope="col">Candle acuan</th><th scope="col">Bar</th><th scope="col">Pola cocok</th><th scope="col">Kemiripan</th><th scope="col">Arah</th><th scope="col">Evaluasi</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="site-footer" id="footer-note">
+  <span>Mode riset · eksekusi otomatis hanya di akun DEMO; akun real selalu ditolak EA.</span>
+  <span class="footer-sep">·</span>
+  <span>Data asli broker via MT5 EA · auto-refresh 20 detik</span>
+</footer>
+
+<div id="auth-modal" class="modal-backdrop" hidden>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button id="auth-close" class="modal-close" type="button" aria-label="Tutup">×</button>
+    <span class="eyebrow">Akses admin</span>
+    <h3 id="auth-title">Masuk admin</h3>
+    <p class="modal-sub">Parameter riset hanya bisa dilihat dan diubah setelah masuk.</p>
+
+    <form id="login-form" method="post" action="/api/login">
+      <label class="modal-field">Nama pengguna
+        <input id="login-user" name="username" autocomplete="username" placeholder="admin" required>
+      </label>
+      <label class="modal-field">Kata sandi
+        <input id="login-pass" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+      </label>
+      <div id="login-error" class="login-error" role="alert"></div>
+      <button id="login-submit" class="btn-primary modal-submit" type="submit">Masuk</button>
+    </form>
+
+    <div id="auth-session" hidden>
+      <p class="auth-who">Masuk sebagai <b id="auth-user">-</b></p>
+      <p class="modal-sub">Sesi admin aktif. Parameter bisa dilihat dan diubah sampai keluar atau sesi kedaluwarsa.</p>
+      <div class="auth-actions">
+        <button id="open-param-btn" class="btn-primary" type="button">Buka parameter</button>
+        <button id="logout-btn" class="btn-ghost" type="button">Keluar</button>
+      </div>
+    </div>
+
+    <p class="modal-foot">Gunakan hanya di perangkat tepercaya.</p>
+  </section>
+</div>
+
+<script src="interactive_chart.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

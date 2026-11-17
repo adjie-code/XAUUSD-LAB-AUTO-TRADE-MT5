@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05080d">
+<title>Monitor Strategi — XAUUSD Pattern Lab</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="strategy-monitor.css">
+</head>
+<body>
+<div class="ambient ambient-gold" aria-hidden="true"></div>
+<div class="ambient ambient-teal" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/" aria-label="Kembali ke dashboard">
+      <span class="logo-mark">MON</span>
+      <span class="brand-copy">
+        <span class="brand-title">XAUUSD <b>Monitor Strategi</b></span>
+        <span class="brand-sub">
+          <span>Live DEMO · 5 strategi · 20 slot</span>
+          <span class="sep">/</span>
+          <span>hanya DEMO</span>
+        </span>
+      </span>
+    </a>
+    <div class="topbar-meta">
+      <span class="status-pill is-stale" id="mon-status">
+        <span class="status-dot"></span>
+        <span id="mon-status-text">memuat…</span>
+      </span>
+      <span class="badge" id="mon-updated">—</span>
+      <a class="nav-chip" href="/strategy-lab">Strategy Lab</a>
+      <a class="nav-chip" href="/">Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<main class="shell mon-shell">
+  <section class="mon-hero">
+    <div>
+      <span class="eyebrow">Monitor Strategi · hanya baca</span>
+      <h1>Satu halaman untuk melihat semua strategi.</h1>
+      <p>
+        Semua strategi di halaman ini sudah <b>LIVE DEMO</b>: PATTERN, PULLBACK,
+        Mean Reversion, Session Breakout, dan PATTERN+Forecast. Total slot 20,
+        dengan PATTERN tetap dibatasi 3. Halaman read-only; PnL/posisi live tetap
+        dibaca dari terminal MT5.
+      </p>
+    </div>
+    <div class="mon-hero-note">
+      <span class="badge-soft">Aturan aman</span>
+      <strong>Live DEMO atas permintaan user.</strong>
+      <p>Mean Reversion dan Breakout belum lolos gate backtest (Tolak), tetapi diaktifkan DEMO dengan lot 0.01. Jangan anggap sebagai jaminan profit. Slot total 20 sudah dikonfigurasi; kapasitas margin akun demo dapat membatasi jumlah posisi nyata.</p>
+    </div>
+  </section>
+
+  <section class="mon-stats" aria-label="Ringkasan strategi">
+    <article class="mon-stat"><span class="eyebrow">Strategi live</span><strong id="stat-live">—</strong><small>semua order DEMO</small></article>
+    <article class="mon-stat"><span class="eyebrow">Slot total</span><strong id="stat-slots">—</strong><small>PATTERN 3 · PULLBACK 2 · baru 15</small></article>
+    <article class="mon-stat"><span class="eyebrow">Forecast</span><strong id="stat-forecast">—</strong><small id="stat-forecast-sub">model arah</small></article>
+    <article class="mon-stat"><span class="eyebrow">Total P/L</span><strong id="stat-pnl">—</strong><small id="stat-pnl-sub">realized + floating</small></article>
+    <article class="mon-stat"><span class="eyebrow">Akurasi arah</span><strong id="stat-direction">—</strong><small id="stat-direction-sub">validasi historis</small></article>
+    <article class="mon-stat"><span class="eyebrow">Tren M5</span><strong id="stat-trend">—</strong><small id="stat-trend-sub">EMA13</small></article>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">Registry</span><h2>Status per strategi</h2></div>
+      <span class="badge-soft" id="mon-count">—</span>
+    </div>
+    <div id="strategy-grid" class="mon-grid" aria-live="polite"></div>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">Posisi</span><h2>Posisi terbuka</h2></div>
+      <span class="badge-soft" id="pos-meta">—</span>
+    </div>
+    <div class="mon-table-wrap">
+      <table class="mon-table" id="positions-table">
+        <thead><tr><th>Strategi</th><th>Ticket</th><th>Sisi</th><th>Lot</th><th>Entry</th><th>Harga</th><th>SL</th><th>TP</th><th>P/L</th><th>Umur</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mon-note">EA memeriksa posisi setiap timer: MEANREV keluar bila H1 berbalik melawan, BREAKOUT keluar bila harga kembali ke range Asia, CONFLUENCE keluar bila forecast tidak lagi searah. PATTERN sekarang menolak/menutup RR aktual <1.0, punya time stop 240 menit + exit tren H1/M5 berbalik; PULLBACK tetap memakai SL/TP, trailing, time stop, dan exit tren H1.</p>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">P/L</span><h2>P/L per strategi</h2></div>
+      <span class="badge-soft" id="pnl-meta">—</span>
+    </div>
+    <div class="mon-table-wrap">
+      <table class="mon-table" id="pnl-strategy-table">
+        <thead><tr><th>Strategi</th><th>Trade tutup</th><th>Realized</th><th>Floating</th><th>Total P/L</th><th>Posisi</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">Riwayat</span><h2>P/L harian</h2></div>
+      <span class="badge-soft">hari server broker</span>
+    </div>
+    <div class="mon-table-wrap">
+      <table class="mon-table" id="pnl-daily-table">
+        <thead><tr><th>Tanggal</th><th>PATTERN</th><th>PULLBACK</th><th>MEANREV</th><th>BREAKOUT</th><th>CONFLUENCE</th><th>Total</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mon-note">Realized dihitung dari deal keluar MT5 (profit + swap + komisi) dan floating dari snapshot posisi. Total memakai USD akun; hari mengikuti tanggal server broker.</p>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">Sinyal</span><h2>Sinyal strategi baru</h2></div>
+      <span class="badge-soft">monitor order</span>
+    </div>
+    <div id="signal-list" class="mon-list" aria-live="polite"></div>
+  </section>
+
+  <section class="panel mon-panel">
+    <div class="panel-head">
+      <div><span class="eyebrow">Backtest 20 tahun</span><h2>Hasil backtest strategi</h2></div>
+      <span class="badge-soft">Dukascopy + HFM live</span>
+    </div>
+    <div class="mon-table-wrap">
+      <table class="mon-table" id="backtest-table">
+        <thead><tr><th>Strategi</th><th>Trade</th><th>Win rate</th><th>Net</th><th>PF</th><th>DD maks</th><th>Putusan</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mon-note">Putusan memakai ambang: trade ≥100, net &gt;0, PF ≥1.2, DD ≤20%, periode ≥5 tahun. Hasil backtest bukan jaminan live.</p>
+  </section>
+
+  <footer class="mon-footer">
+    <span>Monitor Strategi · dokumen riset</span><span class="footer-sep">·</span>
+    <a href="/strategy-lab">Strategy Lab</a><span class="footer-sep">·</span>
+    <span>Tidak ada order dari halaman ini.</span>
+  </footer>
+</main>
+
+<script src="strategy-monitor.js"></script>
+</body>
+</html>

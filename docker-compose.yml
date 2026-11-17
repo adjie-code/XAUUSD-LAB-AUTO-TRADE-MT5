@@ -1,0 +1,68 @@
+name: xauusd-pattern
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xauusd-dashboard
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_PORT:-8090}:8090"
+    environment:
+      DASHBOARD_PORT: "8090"
+      DASHBOARD_DB: /app/data/patterns.db
+      MT5_COMMON_FILES: /mt5-common
+      MT5_DATA_ROOT: /mt5-data
+      MT5_CONTROL_URL: http://mt5:3000
+      MT5_EXPERT_NAME: "XAUUSDPattern\\XAUUSDPatternExecutor"
+      MT5_DEFAULT_SYMBOL: "${MT5_SYMBOL:-XAUUSD}"
+      BROKER_LOGIN_REQUIRED: "1"
+      XAUUSD_DASH_USER: "${XAUUSD_DASH_USER:-admin}"
+      XAUUSD_DASH_PASS: "${XAUUSD_DASH_PASS:-}"
+    volumes:
+      - ./data:/app/data
+      - ./config.json:/app/config.json
+      - ./secrets:/app/secrets
+      - ./mt5-data:/mt5-data
+      - "./mt5-data/wine-prefix/.mt5/drive_c/users/root/AppData/Roaming/MetaQuotes/Terminal/Common/Files:/mt5-common"
+    depends_on:
+      - mt5
+
+  mt5:
+    build:
+      context: ./mt5
+      dockerfile: Dockerfile
+    image: xauusd-mt5:local
+    container_name: xauusd-mt5
+    platform: linux/amd64
+    restart: unless-stopped
+    init: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    ports:
+      # noVNC untuk melihat terminal MT5
+      - "${MT5_NOVNC_PORT:-17080}:6080"
+    environment:
+      AUTO_INSTALL_MT5: "true"
+      AUTO_LAUNCH_MT5: "true"
+      DESKTOP_WIDTH: "1920"
+      DESKTOP_HEIGHT: "1080"
+      DISPLAY_ID: ":99"
+      ENABLE_AUDIO: "false"
+      MT5_DATA_DIR: /data
+      MT5_INSTALL_WEBVIEW2: "false"
+      MT5_INSTALLER_URL: "${MT5_INSTALLER_URL:-https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe}"
+      # Login broker ditulis oleh dashboard ke common.ini, bukan env.
+      MT5_STARTUP_CONFIG: "false"
+      PORT: "3000"
+    volumes:
+      - ./mt5-data:/data
+      - ./mt5-ea/XAUUSDPattern:/data/wine-prefix/.mt5/drive_c/Program Files/HFM Metatrader 5/MQL5/Experts/XAUUSDPattern
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: "3933208576"

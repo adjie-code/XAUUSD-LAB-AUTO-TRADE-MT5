@@ -1,0 +1,125 @@
+{
+  "updated": "2026-11-14",
+  "status": "riset",
+  "skills": [
+    {
+      "id": "xauusd-strategy-lab",
+      "name": "XAUUSD Strategy Lab",
+      "source": "Proyek ini",
+      "role": "Panduan lokal",
+      "stage": "Semua tahap",
+      "desc": "Mengikat alur kerja ke aturan proyek: DEMO only, PULLBACK dibekukan, magic terpisah, dan bukti sebelum promosi.",
+      "license": "Lokal proyek",
+      "url": "/skills/xauusd-strategy-lab/SKILL.md"
+    },
+    {
+      "id": "trade-hypothesis-ideator",
+      "name": "Trade Hypothesis Ideator",
+      "source": "tradermonty",
+      "role": "Hipotesis",
+      "stage": "1 · Riset",
+      "desc": "Mengubah observasi pasar, jurnal, atau log trade menjadi hipotesis yang bisa difalsifikasi, lengkap dengan kill criteria.",
+      "license": "MIT",
+      "url": "https://github.com/tradermonty/claude-trading-skills/blob/main/skills/trade-hypothesis-ideator/SKILL.md"
+    },
+    {
+      "id": "edge-strategy-designer",
+      "name": "Edge Strategy Designer",
+      "source": "tradermonty",
+      "role": "Desain aturan",
+      "stage": "2 · Desain",
+      "desc": "Menurunkan konsep edge menjadi draf aturan entry/exit, varian risiko, dan parameter yang bisa diuji.",
+      "license": "MIT",
+      "url": "https://github.com/tradermonty/claude-trading-skills/blob/main/skills/edge-strategy-designer/SKILL.md"
+    },
+    {
+      "id": "backtest-expert",
+      "name": "Backtest Expert",
+      "source": "tradermonty",
+      "role": "Validasi",
+      "stage": "3 · Backtest",
+      "desc": "Metodologi konservatif: biaya, slippage, robustness, out-of-sample, dan cara menghindari overfitting.",
+      "license": "MIT",
+      "url": "https://github.com/tradermonty/claude-trading-skills/blob/main/skills/backtest-expert/SKILL.md"
+    },
+    {
+      "id": "regime-detection",
+      "name": "Regime Detection",
+      "source": "agiprolabs",
+      "role": "Filter rezim",
+      "stage": "1–2 · Riset & desain",
+      "desc": "Mendeteksi rezim tren/range dan volatilitas untuk memilih kapan sebuah strategi layak dipakai.",
+      "license": "MIT",
+      "url": "https://github.com/agiprolabs/claude-trading-skills/blob/main/skills/regime-detection/SKILL.md"
+    }
+  ],
+  "skipped": [
+    {
+      "name": "mt5-robot-tester",
+      "reason": "Butuh Windows + MetaTrader 5 headless; tidak dijalankan di environment Linux ini."
+    }
+  ],
+  "pipeline": [
+    {
+      "n": 1,
+      "title": "Hipotesis",
+      "stage": "Riset",
+      "desc": "Tulis satu kalimat edge yang bisa difalsifikasi, kondisi berlakunya, dan kill criteria.",
+      "skills": ["trade-hypothesis-ideator", "regime-detection"]
+    },
+    {
+      "n": 2,
+      "title": "Aturan entry/exit",
+      "stage": "Desain",
+      "desc": "Kunci data, timeframe, syarat entry, SL/TP, trailing, time stop, lot, dan batas harian.",
+      "skills": ["edge-strategy-designer", "xauusd-strategy-lab"]
+    },
+    {
+      "n": 3,
+      "title": "Backtest",
+      "stage": "Uji",
+      "desc": "Uji in-sample/out-of-sample dengan biaya realistis, robustness parameter, dan rezim berbeda.",
+      "skills": ["backtest-expert"]
+    },
+    {
+      "n": 4,
+      "title": "Validasi EA",
+      "stage": "Validasi",
+      "desc": "Implementasi mandiri, compile 0 error/0 warning, dan pastikan exit hanya menyentuh magic baru.",
+      "skills": ["xauusd-strategy-lab"]
+    },
+    {
+      "n": 5,
+      "title": "Demo",
+      "stage": "Demo",
+      "desc": "Mulai dari shadow/signal-only atau lot kecil; bandingkan slippage, spread, dan exit dengan backtest.",
+      "skills": ["xauusd-strategy-lab"]
+    },
+    {
+      "n": 6,
+      "title": "Promosi",
+      "stage": "Gate",
+      "desc": "Butuh bukti konsisten, alokasi slot yang disetujui, backup, compile ulang, dan persetujuan eksplisit.",
+      "skills": ["xauusd-strategy-lab"]
+    }
+  ],
+  "constraints": [
+    {
+      "title": "PULLBACK dibekukan",
+      "text": "Magic 20261113, aturan H1/M5, slot, dan exit PULLBACK tidak boleh diubah untuk memberi tempat strategi baru."
+    },
+    {
+      "title": "Slot 3 + 2 sudah penuh",
+      "text": "PATTERN 3 dan PULLBACK 2 memenuhi batas global 5. Strategi baru butuh keputusan alokasi slot atau mode shadow."
+    },
+    {
+      "title": "Identitas mandiri",
+      "text": "Magic baru, exit sendiri, log berprefiks sendiri, dan tidak memblokir atau menutup posisi strategi lain."
+    },
+    {
+      "title": "Halaman ini tidak mengeksekusi order",
+      "text": "Strategy Lab hanya untuk riset dan pelacakan. Tidak ada tombol yang mengubah EA, config, atau mengirim order."
+    }
+  ],
+  "brief": "NAMA STRATEGI:\nHIPOTESIS (falsifiable):\nREZIM / SESI BERLAKU:\nENTRY:\nEXIT (SL / TP / trailing / time stop):\nMAGIC BARU:\nALOKASI SLOT:\nKILL CRITERIA:\nDATA / PERIODE UJI:\nCATATAN:"
+}

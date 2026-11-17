@@ -1,0 +1,14 @@
+.git
+.env
+secrets
+data/*.db
+data/.session_secret
+mt5-data
+linux-mt5-data
+linux-mt5-native-data
+backups
+backtest/results
+backtest/data
+__pycache__
+*.pyc
+*.log

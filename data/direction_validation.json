@@ -1,0 +1,14 @@
+{
+  "period": "2024-01-01 -> 2026-11-16",
+  "horizon_candles": 10,
+  "n_signals": 17703,
+  "n_bars": 196589,
+  "coverage_pct": 9.01,
+  "hit_pct": 53.44,
+  "n_high": 613,
+  "high_hit_pct": 55.95,
+  "n_medium": 17090,
+  "medium_hit_pct": 53.35,
+  "rule": "mean-reversion RSI/Bollinger + trend/session high-confidence",
+  "generated_at": "2026-11-16 06:29:13"
+}
