@@ -78,6 +78,10 @@ Tunggu terminal MT5 selesai restart, lalu buka dashboard:
 http://IP-SERVER:8090/
 ```
 
+Jika build MT5 tertentu tidak otomatis memakai `common.ini`, buka noVNC
+`http://IP-SERVER:17080`, login akun di terminal, lalu attach EA
+`XAUUSDPattern/XAUUSDPatternExecutor` ke chart M5. Setelah itu buka dashboard.
+
 Terminal MT5 dapat dilihat lewat noVNC:
 
 ```text

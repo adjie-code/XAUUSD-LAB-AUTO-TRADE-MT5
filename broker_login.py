@@ -12,6 +12,7 @@ import json
 import os
 import re
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -256,6 +257,11 @@ def login(payload: dict) -> dict:
         raw = common.read_bytes()
     except OSError as e:
         raise RuntimeError(f"Tidak bisa membaca common.ini: {e}") from e
+    # Hentikan MT5 DULU agar proses shutdown tidak menimpa common.ini.
+    stop = _post("/api/mt5/stop")
+    if stop.get("ok"):
+        time.sleep(1)
+
     text, encoding = _decode_ini(raw)
     updated = _update_ini(text, {
         "Common": {"Login": account, "Password": password, "Server": server},
@@ -274,7 +280,16 @@ def login(payload: dict) -> dict:
 
     if symbol:
         _update_symbol_config(symbol)
-    control = _restart_mt5()
+    launch = _post("/api/mt5/launch")
+    control = {"stop": stop, "launch": launch, "warnings": []}
+    if not stop.get("ok"):
+        control["warnings"].append(
+            "MT5 stop API tidak merespons; login ditulis saat terminal mungkin masih hidup."
+        )
+    if not launch.get("ok"):
+        control["warnings"].append(
+            "MT5 launch API gagal; buka/restart container MT5 manual."
+        )
 
     _ensure_secrets()
     session = {
