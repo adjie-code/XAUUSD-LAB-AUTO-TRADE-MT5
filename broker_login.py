@@ -211,6 +211,7 @@ def _update_symbol_config(symbol: str) -> None:
         cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         cfg = {}
+    cfg["pair"] = symbol
     at = cfg.setdefault("auto_trade", {})
     at["symbol"] = symbol
     at["auto_symbol"] = True

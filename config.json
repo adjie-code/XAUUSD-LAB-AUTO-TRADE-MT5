@@ -14,7 +14,7 @@
   "predict_top_k": 40,
   "auto_trade": {
     "enabled": true,
-    "symbol": "XAUUSD",
+    "symbol": "XAUUSDC",
     "lot": 0.01,
     "lot_strong": 0.05,
     "prob_min": 75,
@@ -25,6 +25,7 @@
     "trend_period": 13,
     "rr_min_trend": 1.0,
     "symbol_candidates": [
+      "XAUUSDC",
       "XAUUSD",
       "XAUUSDc",
       "XAUUSDb",
